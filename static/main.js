@@ -130,8 +130,8 @@ let opts = {
 	title: "Test",
 	id: "test",
 	class: "test",
-	width: 800,
-	height: 600,
+	width: 1000,
+	height: 400,
 	plugins: [wheelZoomPlugin({factor: 0.75})],
 	scales: {
 		x: {
@@ -148,6 +148,9 @@ let opts = {
 			label: "y",
 			stroke: "red",
 			width: 1,
+			points: {
+				show: false
+			}
 		}
 	]
 }

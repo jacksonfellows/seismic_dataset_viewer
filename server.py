@@ -4,9 +4,7 @@ from flask import Flask
 
 app = Flask(__name__)
 
-X = np.linspace(0,10,50,dtype="float32")
-Y = np.sin(X)
-XY = np.concatenate((X, Y), axis=None)
+XY = np.load("XY_test.npy")
 
 @app.route("/")
 def index():
