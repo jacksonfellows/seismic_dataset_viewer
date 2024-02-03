@@ -1,0 +1,5 @@
+name: pickhelper
+dependencies:
+ - python
+ - flask
+ - numpy
