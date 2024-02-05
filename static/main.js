@@ -21,6 +21,7 @@ let resetScalePlugin = {
 			let over = u.over;
 
 			function resetBounds(e) {
+				e.stopPropagation(); // Stop click event from triggering on parent div.
 				// Have to use sync object.
 				for (let u_ of sync.plots) {
 					u_.setScale("x", {min: xMin, max: xMax});
@@ -39,13 +40,19 @@ let resetScalePlugin = {
 	}
 };
 
-let picks = {
-	"/xy/0": 20,
-	"/xy/1": 25,
-};
+let picks = {};
 
 let pickPlugin = {
 	hooks: {
+		ready: u => {
+			u.over.onclick = e => {
+				// Use offsetX not clientX!
+				let pickX = u.posToVal(e.offsetX, "x");
+				picks[u.id] = pickX;
+				// Force a redraw so that we see the pick.
+				u.redraw();
+			};
+		},
 		draw: u => {
 			let pickX = picks[u.id];
 			if (pickX) {
@@ -123,7 +130,7 @@ window.onload = _ => {
 	loadPlot("/xy/1");
 	loadPlot("/xy/2");
 	loadPlot("/xy/3");
-	// loadPlot("/xy/4");
-	// loadPlot("/xy/5");
-	// loadPlot("/xy/6");
+	loadPlot("/xy/4");
+	loadPlot("/xy/5");
+	loadPlot("/xy/6");
 };
