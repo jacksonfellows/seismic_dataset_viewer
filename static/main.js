@@ -12,7 +12,7 @@ function loadArray(path, handler) {
 
 let sync = uPlot.sync("test");
 
-let myPlugin = {
+let resetScalePlugin = {
 	hooks: {
 		ready: u => {			// u is a uPlot object.
 			// Save original bounds.
@@ -35,6 +35,32 @@ let myPlugin = {
 			buttonDiv.appendChild(button);
 			button.onclick = resetBounds;
 			over.appendChild(buttonDiv);
+		}
+	}
+};
+
+let picks = {
+	"/xy/0": 20,
+	"/xy/1": 25,
+};
+
+let pickPlugin = {
+	hooks: {
+		draw: u => {
+			let pickX = picks[u.id];
+			if (pickX) {
+				let minYPos = u.valToPos(u.scales.y.min, "y", true);
+				let maxYPos = u.valToPos(u.scales.y.max, "y", true);
+				let xPos = u.valToPos(pickX, "x", true);
+				let ctx = u.ctx;
+				ctx.save();
+				ctx.strokeStyle = "red";
+				ctx.beginPath();
+				ctx.moveTo(xPos, minYPos); ctx.lineTo(xPos, maxYPos);
+				ctx.stroke();
+				ctx.restore();
+
+			}
 		}
 	}
 };
@@ -79,15 +105,16 @@ let opts = {
 	legend: {
 		show: false,
 	},
-	plugins: [myPlugin]
+	plugins: [resetScalePlugin, pickPlugin]
 };
 
 function loadPlot(path) {
 	loadArray(path, a => {
 		let M = a.length / 2;
 		let data = [a.slice(0, M), a.slice(M, a.length)];
-		let plot = new uPlot(opts, data, document.getElementById("plots"));
-		sync.sub(plot);
+		let u = new uPlot(opts, data, document.getElementById("plots"));
+		u.id = path;			// Set an id so we can e.g. reference picks later.
+		sync.sub(u);
 	});
 }
 
@@ -96,7 +123,7 @@ window.onload = _ => {
 	loadPlot("/xy/1");
 	loadPlot("/xy/2");
 	loadPlot("/xy/3");
-	loadPlot("/xy/4");
-	loadPlot("/xy/5");
-	loadPlot("/xy/6");
+	// loadPlot("/xy/4");
+	// loadPlot("/xy/5");
+	// loadPlot("/xy/6");
 };
