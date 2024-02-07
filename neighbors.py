@@ -1,6 +1,7 @@
 # WARNING: This file currently needs the seismoslide conda env.
 
 import json
+import shutil
 import tempfile
 from pathlib import Path
 
@@ -100,7 +101,7 @@ def write_event(event_m, picks_dict, st, inv):
 
 def download_and_write():
     event_ids = su_m["event_id"].unique()
-    for event_id in event_ids[:40]:
+    for event_id in event_ids[3000:3010]:
         if (Path("events") / event_id).exists():
             print(f"skipping event {event_id}")
             continue
@@ -136,11 +137,14 @@ def download_and_write():
             st, inv = download_event(ref_m, radius_deg=radius_deg)
         except Exception as e:
             print(f"downloading event {event_id} failed: {e}")
-            continue
         try:
             write_event(ref_m, picks_dict, st, inv)
         except Exception as e:
             print(f"writing event {event_id} failed: {e}")
+            # Cleanup! If we didn't download the full event stuff will be broken.
+            event_dir = Path("events") / ref_m["event_id"]
+            print(f"deleting {event_dir}")
+            shutil.rmtree(event_dir)
             continue
 
 
