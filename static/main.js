@@ -42,6 +42,13 @@ let resetScalePlugin = {
 
 let picks = {};
 
+function savePicks() {
+	let client = new XMLHttpRequest();
+	client.open("POST", `/save_picks/${CC.event_id}`, true);
+	client.setRequestHeader("Content-Type", "application/json");
+	client.send(JSON.stringify({picks: picks}));
+}
+
 function drawPick(u, pickX, strokeStyle) {
 	let minYPos = u.valToPos(u.scales.y.min, "y", true);
 	let maxYPos = u.valToPos(u.scales.y.max, "y", true);

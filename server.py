@@ -35,3 +35,9 @@ def index():
                 "trace_start_time": event_m["trace_start_time"]
             }
     return flask.render_template("home.html", event_info=event_info)
+
+@app.route("/save_picks/<event_id>", methods=["POST"])
+def save_picks(event_id):
+    save_info = flask.request.json
+    print(f"{save_info=}")
+    return {}                   # Need to return a non-None response.
