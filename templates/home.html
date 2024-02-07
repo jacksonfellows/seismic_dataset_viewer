@@ -2,7 +2,7 @@
 
 </head>
 <body>
-  {% for event_id,event_m in event_info.items() %}
-  <a href="/event/{{ event_id }}">{{ event_id }}</a>, {{ event_m["reference_channel"] }}, {{ event_m["trace_start_time"] }}</br>
+  {% for i in event_info %}
+  <a href="/event/{{ i['event_id'] }}">{{ i["event_id"] }}</a>, {{ i["reference_channel"] }}, {{ i["trace_start_time"] }}</br>
   {% endfor %}
 </body>
