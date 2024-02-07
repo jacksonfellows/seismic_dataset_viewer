@@ -42,6 +42,19 @@ let resetScalePlugin = {
 
 let picks = {};
 
+function drawPick(u, pickX, strokeStyle) {
+	let minYPos = u.valToPos(u.scales.y.min, "y", true);
+	let maxYPos = u.valToPos(u.scales.y.max, "y", true);
+	let xPos = u.valToPos(pickX, "x", true);
+	let ctx = u.ctx;
+	ctx.save();
+	ctx.strokeStyle = strokeStyle;
+	ctx.beginPath();
+	ctx.moveTo(xPos, minYPos); ctx.lineTo(xPos, maxYPos);
+	ctx.stroke();
+	ctx.restore();
+}
+
 let pickPlugin = {
 	hooks: {
 		ready: u => {
@@ -55,19 +68,9 @@ let pickPlugin = {
 		},
 		draw: u => {
 			let pickX = picks[u.id];
-			if (pickX) {
-				let minYPos = u.valToPos(u.scales.y.min, "y", true);
-				let maxYPos = u.valToPos(u.scales.y.max, "y", true);
-				let xPos = u.valToPos(pickX, "x", true);
-				let ctx = u.ctx;
-				ctx.save();
-				ctx.strokeStyle = "red";
-				ctx.beginPath();
-				ctx.moveTo(xPos, minYPos); ctx.lineTo(xPos, maxYPos);
-				ctx.stroke();
-				ctx.restore();
-
-			}
+			if (pickX) drawPick(u, pickX, "red");
+			let refPickX = CC.reference_picks[u.id];
+			if (refPickX) drawPick(u, refPickX, "orange");
 		}
 	}
 };
@@ -195,7 +198,6 @@ function setupMap() {
 	// Add scale bar.
 	L.control.scale().addTo(map);
 }
-
 
 window.onload = _ => {
 	setupMap();
