@@ -74,10 +74,10 @@ let pickPlugin = {
 			};
 		},
 		draw: u => {
-			let pickX = picks[u.id];
-			if (pickX) drawPick(u, pickX, "red");
 			let refPickX = CC.reference_picks[u.id];
 			if (refPickX) drawPick(u, refPickX, "orange");
+			let pickX = picks[u.id];
+			if (pickX) drawPick(u, pickX, "red");
 		}
 	}
 };
