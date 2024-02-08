@@ -95,7 +95,15 @@ let pickPlugin = {
 	}
 };
 
-let oldBounds;
+// It appears that Leaflet doesn't update the result of map.getBounds()
+// instantly after you call map.fitBounds() (maybe it only updates after the
+// transition animation is finished?). Thus I need to store the current bounds
+// independently of Leaflet for restoring the bounds on mouse leave to work
+// properly. Before this change the bounds restoring would break when you
+// entered and left a graph too fast.
+
+// bounds.current = current map bounds, bounds.old = map bounds before zooming in
+let bounds = {};
 
 let mapPlugin = {
 	hooks: {
@@ -104,12 +112,14 @@ let mapPlugin = {
 			u.over.onmouseenter = e => {
 				let refMarker = station_markers[getStationName(CC.reference_channel)];
 				let marker = station_markers[getStationName(u.id)];
-				oldBounds = map.getBounds();
-				map.fitBounds(new L.featureGroup([refMarker, marker]).getBounds().pad(0.2));
+				bounds.old = bounds.current;
+				bounds.current = new L.featureGroup([refMarker, marker]).getBounds().pad(0.2);
+				map.fitBounds(bounds.current);
 				L.DomUtil.addClass(marker._icon.children[0], "station-selected");
 			};
 			u.over.onmouseleave = e => {
-				map.fitBounds(oldBounds);
+				bounds.current = bounds.old;
+				map.fitBounds(bounds.current);
 				L.DomUtil.removeClass(station_markers[getStationName(u.id)]._icon.children[0], "station-selected");
 			};
 		}
@@ -212,7 +222,8 @@ function setupMap() {
 		station_markers[station] = marker;
 	}
 	// Expand view to fit all markers.
-	map.fitBounds(new L.featureGroup(Object.values(station_markers)).getBounds());
+	bounds.current = new L.featureGroup(Object.values(station_markers)).getBounds();
+	map.fitBounds(bounds.current);
 	// Mark reference station.
 	L.DomUtil.addClass(station_markers[getStationName(CC.reference_channel)]._icon.children[0], "station-reference");
 	// Add scale bar.
