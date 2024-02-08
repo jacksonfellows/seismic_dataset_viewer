@@ -65,6 +65,19 @@ function drawPick(u, pickX, strokeStyle) {
 let pickPlugin = {
 	hooks: {
 		ready: u => {
+			// Add clear pick button.
+			let buttonDiv = document.createElement("div");
+			buttonDiv.style = "float: right;";
+			let button = document.createElement("button");
+			button.innerHTML = "❌";
+			buttonDiv.appendChild(button);
+			button.onclick = e => {
+				e.stopPropagation(); // Stop click event from triggering on parent div.
+				delete picks[u.id];
+				u.redraw();
+			};
+			u.over.appendChild(buttonDiv);
+
 			u.over.onclick = e => {
 				// Use offsetX not clientX!
 				let pickX = u.posToVal(e.offsetX, "x");
