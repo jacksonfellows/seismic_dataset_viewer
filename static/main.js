@@ -100,6 +100,21 @@ let bounds = {};
 let inFitBounds = false;		// Is Leaflet currently performing a map.fitBounds().
 let deferFitBounds = false;		// Do have another map.fitBounds() to perform?
 
+function safeFitBounds() {
+	if (inFitBounds) {
+		deferFitBounds = true;
+	} else {
+		inFitBounds = true;
+		map.fitBounds(bounds.current);
+		setTimeout(() => {
+			inFitBounds = false;
+			if (deferFitBounds) {
+				safeFitBounds();
+			}
+		}, 250);
+	}
+}
+
 let mapPlugin = {
 	hooks: {
 		ready: u => {
@@ -109,17 +124,12 @@ let mapPlugin = {
 				let marker = station_markers[getStationName(u.id)];
 				bounds.old = bounds.current;
 				bounds.current = new L.featureGroup([refMarker, marker]).getBounds().pad(0.2);
-				if (inFitBounds) {
-					deferFitBounds = true;
-				} else {
-					map.fitBounds(bounds.current);
-				}
+				safeFitBounds();
 				L.DomUtil.addClass(marker._icon.children[0], "station-selected");
 			};
 			u.over.onmouseleave = e => {
 				bounds.current = bounds.old;
-				inFitBounds = true;
-				map.fitBounds(bounds.current);
+				safeFitBounds();
 				L.DomUtil.removeClass(station_markers[getStationName(u.id)]._icon.children[0], "station-selected");
 			};
 		}
@@ -228,16 +238,6 @@ function setupMap() {
 	L.DomUtil.addClass(station_markers[getStationName(CC.reference_channel)]._icon.children[0], "station-reference");
 	// Add scale bar.
 	L.control.scale().addTo(map);
-
-	// :(
-	map.on("mouseend zoomend", e => {
-		if (deferFitBounds) {
-			deferFitBounds = false;
-			map.fitBounds(bounds.current);
-		} else {
-			inFitBounds = false;
-		}
-	});
 }
 
 window.onload = _ => {
