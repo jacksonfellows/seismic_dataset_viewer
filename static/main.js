@@ -137,8 +137,7 @@ let mapPlugin = {
 };
 
 let defaultOpts = {
-	width: 800,
-	height: 180,
+	...getPlotSize(),
 	cursor: {
 		sync: {
 			key: sync.key,
@@ -179,6 +178,8 @@ let defaultOpts = {
 	plugins: [resetScalePlugin, pickPlugin, mapPlugin]
 };
 
+let nPlotsLoaded = 0;
+
 function loadPlot(channel, elem, opts) {
 	path = `/xy/${CC.event_id}/${channel}`;
 	loadArray(path, a => {
@@ -188,6 +189,10 @@ function loadPlot(channel, elem, opts) {
 		let u = new uPlot(opts_, data, elem);
 		u.id = channel;			// Set an id so we can e.g. reference picks later.
 		sync.sub(u);
+		nPlotsLoaded++;
+		if (nPlotsLoaded == CC.channels.length) {
+			onPlotsLoaded();
+		}
 	});
 }
 
@@ -212,7 +217,7 @@ function loadChannels() {
 let station_markers = {};
 let map;
 
-function setupMap() {
+function onPlotsLoaded() {
 	map = L.map("map");
 	map.attributionControl.setPrefix("Leaflet");
 	// L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -240,7 +245,17 @@ function setupMap() {
 	L.control.scale().addTo(map);
 }
 
-window.onload = _ => {
-	setupMap();
-	loadChannels();
-};
+window.onload = loadChannels;
+
+function getPlotSize() {
+	let totalWidth = window.innerWidth;
+	let plotWidth = Math.floor(0.6*totalWidth);
+	return {width: plotWidth, height: 180};
+}
+
+function resizePlots() {
+	let newSize = getPlotSize();
+	sync.plots.forEach(u => u.setSize(newSize));
+}
+
+window.onresize = resizePlots;
