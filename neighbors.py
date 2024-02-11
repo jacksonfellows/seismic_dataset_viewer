@@ -13,6 +13,9 @@ import pandas as pd
 exotic_m = pd.read_csv("~/.seisbench/datasets/pnwexotic/metadata.csv")
 su_m = exotic_m[exotic_m["source_type"] == "surface event"]
 
+pre_pick_time = 0
+after_pick_time = 120
+
 
 def download_event(event_m, radius_deg):
     lat, lon = event_m["station_latitude_deg"], event_m["station_longitude_deg"]
@@ -23,7 +26,10 @@ def download_event(event_m, radius_deg):
     print(lat, lon, radius_deg)
     start_time = obspy.UTCDateTime(event_m["trace_start_time"])
     restrictions = mdown.Restrictions(
-        starttime=start_time, endtime=start_time + 120, channel="*HZ"
+        starttime=start_time - pre_pick_time,
+        endtime=start_time + after_pick_time,
+        channel="*HZ",
+        minimum_interstation_distance_in_m=0, # Default is 1000 m!
     )
 
     # Download event files to a temporary directory.
@@ -130,7 +136,7 @@ def download_and_write():
         # assert((event_traces["trace_P_arrival_sample"]==7000).all)()
         # For some reason the trace_P_arrival_sample of 7000 seems to be 20 s.
         # TODO: Look into this. Is it always exactly 20 s?
-        picks = 20 + times - times[refi]
+        picks = pre_pick_time + 20 + times - times[refi]
         picks_dict = {make_channel_name(event_traces.iloc[i]): picks[i] for i in range(len(picks))}
         print(f"{picks_dict=}, {radius_deg=}")
         try:
