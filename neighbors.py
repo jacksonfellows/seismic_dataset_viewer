@@ -44,6 +44,7 @@ def download_event(event_m, radius_deg):
 
     # Read the files into obspy.
     st = obspy.read(Path(download_dir) / "*.mseed")
+    st.resample(100)
     inv = obspy.read_inventory(Path(download_dir) / "*.xml")
     return st, inv
 
@@ -73,11 +74,8 @@ def write_event(event_m, picks_dict, st, inv):
     event_dir.mkdir()
     # Waveforms
     for tr in st:
-        # Endianness important for loading in browser.
-        X = tr.times().astype("<f")
         Y = tr.data.astype("<f")
-        XY = np.concatenate((X, Y), axis=None)
-        np.save(event_dir / tr.id, XY)
+        np.save(event_dir / tr.id, Y)
     # Metadata
     channels = inv.get_contents()["channels"]
     # TODO: Handle events w/ multiple picks.
@@ -107,7 +105,7 @@ def write_event(event_m, picks_dict, st, inv):
 
 def download_and_write():
     event_ids = su_m["event_id"].unique()
-    for event_id in event_ids[3000:3010]:
+    for event_id in event_ids[3500:3510]:
         if (Path("events") / event_id).exists():
             print(f"skipping event {event_id}")
             continue
@@ -151,7 +149,6 @@ def download_and_write():
             event_dir = Path("events") / ref_m["event_id"]
             print(f"deleting {event_dir}")
             shutil.rmtree(event_dir)
-            continue
 
 
 if __name__ == "__main__":

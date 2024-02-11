@@ -14,11 +14,14 @@ def event(event_id):
         metadata = json.load(f)
     return flask.render_template("index.html", client_config=metadata)
 
+
 @app.route("/xy/<event_id>/<channel>")
 def xy(event_id, channel):
     event_dir = Path("events") / event_id
     # Assume file has correct dtype!
-    XY = np.load(event_dir / f"{channel}.npy")
+    Y = np.load(event_dir / f"{channel}.npy")
+    X = np.linspace(0, 120, len(Y), dtype=Y.dtype)
+    XY = np.concatenate((X,Y), axis=None)
     response = flask.make_response(XY.tobytes())
     response.headers.set("Content-Type", "application/octet-stream")
     return response
