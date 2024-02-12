@@ -2,12 +2,20 @@
 
 </head>
 <body>
-  <table>
+  <table style="text-align: center;">
+    <tr>
+      <th>Event ID</th>
+      <th>Reference Pick Channel</th>
+      <th>Trace Start Time</th>
+      <th># Reference Picks</th>
+      <th># User Picks</th>
     {% for i in event_info %}
     <tr>
       <td><a href="/event/{{ i['event_id'] }}">{{ i["event_id"] }}</a></td>
       <td>{{ i["reference_channel"] }}</td>
       <td>{{ i["trace_start_time"] }}</td>
+      <td>{{ i["n_reference_picks"] }}</td>
+      <td>{{ i["n_picks"] }}</td>
     </tr>
     {% endfor %}
   </table>

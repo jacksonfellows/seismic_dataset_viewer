@@ -35,11 +35,19 @@ def index():
             event_m = json.load(f)
             event_info[event_id] = {
                 "reference_channel": event_m["reference_channel"],
-                "trace_start_time": event_m["trace_start_time"]
+                "trace_start_time": event_m["trace_start_time"],
+                "n_reference_picks": len(event_m["reference_picks"]),
+                "n_picks": len(event_m["picks"]),
             }
     # Sort by trace_start_time.
     event_info_render = list(sorted(
-        [dict(event_id=k, reference_channel=v["reference_channel"], trace_start_time=v["trace_start_time"]) for k,v in event_info.items()],
+        [dict(
+            event_id=k,
+            reference_channel=v["reference_channel"],
+            trace_start_time=v["trace_start_time"],
+            n_reference_picks=v["n_reference_picks"],
+            n_picks=v["n_picks"]
+        ) for k,v in event_info.items()],
         key=lambda x: x["trace_start_time"]
     ))
     return flask.render_template("home.html", event_info=event_info_render)
