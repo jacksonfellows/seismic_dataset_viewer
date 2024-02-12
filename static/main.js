@@ -45,6 +45,11 @@ function savePicks() {
 	client.open("POST", `/save_picks/${CC.event_id}`, true);
 	client.setRequestHeader("Content-Type", "application/json");
 	client.send(JSON.stringify({picks: CC.picks}));
+	client.addEventListener("load", _ => {
+		if (client.status == 200) {
+			updatedPicks = false;
+		}
+	});
 }
 
 function drawPick(u, pickX, strokeStyle) {
@@ -60,6 +65,14 @@ function drawPick(u, pickX, strokeStyle) {
 	ctx.restore();
 }
 
+let updatedPicks = false;
+
+window.onbeforeunload = e => {
+	if (updatedPicks) {
+		e.preventDefault();
+	}
+};
+
 let pickPlugin = {
 	hooks: {
 		ready: u => {
@@ -72,6 +85,7 @@ let pickPlugin = {
 			button.onclick = e => {
 				e.stopPropagation(); // Stop click event from triggering on parent div.
 				delete CC.picks[u.id];
+				updatedPicks = true;
 				u.redraw();
 			};
 			u.over.appendChild(buttonDiv);
@@ -80,6 +94,7 @@ let pickPlugin = {
 				// Use offsetX not clientX!
 				let pickX = u.posToVal(e.offsetX, "x");
 				CC.picks[u.id] = pickX;
+				updatedPicks = true;
 				// Force a redraw so that we see the pick.
 				u.redraw();
 			};
