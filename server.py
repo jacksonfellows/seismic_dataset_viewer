@@ -46,6 +46,11 @@ def index():
 
 @app.route("/save_picks/<event_id>", methods=["POST"])
 def save_picks(event_id):
+    event_dir = Path("events") / event_id
+    with open(event_dir / "metadata.json", "r") as f:
+        metadata = json.load(f)
     save_info = flask.request.json
-    print(f"{save_info=}")
+    metadata["picks"] = save_info["picks"]
+    with open(event_dir / "metadata.json", "w") as f:
+        json.dump(metadata, f)
     return {}                   # Need to return a non-None response.

@@ -40,13 +40,11 @@ let resetScalePlugin = {
 	}
 };
 
-let picks = {};
-
 function savePicks() {
 	let client = new XMLHttpRequest();
 	client.open("POST", `/save_picks/${CC.event_id}`, true);
 	client.setRequestHeader("Content-Type", "application/json");
-	client.send(JSON.stringify({picks: picks}));
+	client.send(JSON.stringify({picks: CC.picks}));
 }
 
 function drawPick(u, pickX, strokeStyle) {
@@ -73,7 +71,7 @@ let pickPlugin = {
 			buttonDiv.appendChild(button);
 			button.onclick = e => {
 				e.stopPropagation(); // Stop click event from triggering on parent div.
-				delete picks[u.id];
+				delete CC.picks[u.id];
 				u.redraw();
 			};
 			u.over.appendChild(buttonDiv);
@@ -81,7 +79,7 @@ let pickPlugin = {
 			u.over.onclick = e => {
 				// Use offsetX not clientX!
 				let pickX = u.posToVal(e.offsetX, "x");
-				picks[u.id] = pickX;
+				CC.picks[u.id] = pickX;
 				// Force a redraw so that we see the pick.
 				u.redraw();
 			};
@@ -89,7 +87,7 @@ let pickPlugin = {
 		draw: u => {
 			let refPickX = CC.reference_picks[u.id];
 			if (refPickX) drawPick(u, refPickX, "orange");
-			let pickX = picks[u.id];
+			let pickX = CC.picks[u.id];
 			if (pickX) drawPick(u, pickX, "red");
 		}
 	}
