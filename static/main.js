@@ -110,22 +110,9 @@ let pickPlugin = {
 
 // bounds.current = current map bounds, bounds.old = map bounds before zooming in
 let bounds = {};
-let inFitBounds = false;		// Is Leaflet currently performing a map.fitBounds().
-let deferFitBounds = false;		// Do have another map.fitBounds() to perform?
 
 function safeFitBounds() {
-	if (inFitBounds) {
-		deferFitBounds = true;
-	} else {
-		inFitBounds = true;
-		map.fitBounds(bounds.current);
-		setTimeout(() => {
-			inFitBounds = false;
-			if (deferFitBounds) {
-				safeFitBounds();
-			}
-		}, 250);
-	}
+	map.fitBounds(bounds.current, {animate: false});
 }
 
 let mapPlugin = {
