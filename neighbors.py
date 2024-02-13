@@ -105,7 +105,8 @@ def write_event(event_m, picks_dict, st, inv):
 
 def download_and_write():
     event_ids = su_m["event_id"].unique()
-    for event_id in event_ids[3500:3510]:
+    print(f"Downloading {len(event_ids)} events.")
+    for event_id in event_ids:
         if (Path("events") / event_id).exists():
             print(f"skipping event {event_id}")
             continue

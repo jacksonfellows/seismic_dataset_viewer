@@ -3,3 +3,5 @@ dependencies:
  - python
  - flask
  - numpy
+ - pandas
+ - obspy
