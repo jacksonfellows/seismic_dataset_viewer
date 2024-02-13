@@ -10,7 +10,7 @@ import obspy
 import obspy.clients.fdsn.mass_downloader as mdown
 import pandas as pd
 
-exotic_m = pd.read_csv("~/.seisbench/datasets/pnwexotic/metadata.csv")
+exotic_m = pd.read_csv("pnwexotic_metadata.csv")
 su_m = exotic_m[exotic_m["source_type"] == "surface event"]
 
 pre_pick_time = 0
