@@ -65,7 +65,10 @@ def event(event_id):
 def xy(event_id, channel):
     event_dir = Path("events") / event_id
     # Assume file has correct dtype!
-    Y = np.load(event_dir / f"{channel}.npy")
+    try:
+        Y = np.load(event_dir / f"{channel}.npy")
+    except FileNotFoundError:
+        Y = np.zeros(2, dtype="<f")
     X = np.linspace(0, 120, len(Y), dtype=Y.dtype)
     XY = np.concatenate((X, Y), axis=None)
     response = flask.make_response(XY.tobytes())
