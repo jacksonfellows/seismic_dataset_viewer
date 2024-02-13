@@ -7,6 +7,7 @@ from flask import Flask
 
 app = Flask(__name__)
 
+
 @app.route("/event/<event_id>")
 def event(event_id):
     event_dir = Path("events") / event_id
@@ -21,10 +22,11 @@ def xy(event_id, channel):
     # Assume file has correct dtype!
     Y = np.load(event_dir / f"{channel}.npy")
     X = np.linspace(0, 120, len(Y), dtype=Y.dtype)
-    XY = np.concatenate((X,Y), axis=None)
+    XY = np.concatenate((X, Y), axis=None)
     response = flask.make_response(XY.tobytes())
     response.headers.set("Content-Type", "application/octet-stream")
     return response
+
 
 @app.route("/")
 def index():
@@ -40,17 +42,23 @@ def index():
                 "n_picks": len(event_m["picks"]),
             }
     # Sort by trace_start_time.
-    event_info_render = list(sorted(
-        [dict(
-            event_id=k,
-            reference_channel=v["reference_channel"],
-            trace_start_time=v["trace_start_time"],
-            n_reference_picks=v["n_reference_picks"],
-            n_picks=v["n_picks"]
-        ) for k,v in event_info.items()],
-        key=lambda x: x["trace_start_time"]
-    ))
+    event_info_render = list(
+        sorted(
+            [
+                dict(
+                    event_id=k,
+                    reference_channel=v["reference_channel"],
+                    trace_start_time=v["trace_start_time"],
+                    n_reference_picks=v["n_reference_picks"],
+                    n_picks=v["n_picks"],
+                )
+                for k, v in event_info.items()
+            ],
+            key=lambda x: x["trace_start_time"],
+        )
+    )
     return flask.render_template("home.html", event_info=event_info_render)
+
 
 @app.route("/save_picks/<event_id>", methods=["POST"])
 def save_picks(event_id):
@@ -61,4 +69,4 @@ def save_picks(event_id):
     metadata["picks"] = save_info["picks"]
     with open(event_dir / "metadata.json", "w") as f:
         json.dump(metadata, f)
-    return {}                   # Need to return a non-None response.
+    return {}  # Need to return a non-None response.
