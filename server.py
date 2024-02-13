@@ -75,33 +75,20 @@ def xy(event_id, channel):
 
 @app.route("/")
 def index():
-    event_info = {}
+    event_info_render = []
     for event_dir in Path("events").iterdir():
         event_id = event_dir.name
         with open(event_dir / "metadata.json", "r") as f:
             event_m = json.load(f)
-            event_info[event_id] = {
-                "reference_channel": event_m["reference_channel"],
-                "trace_start_time": event_m["trace_start_time"],
-                "n_reference_picks": len(event_m["reference_picks"]),
-                "n_picks": get_num_picks(event_id),
-            }
-    # Sort by trace_start_time.
-    event_info_render = list(
-        sorted(
-            [
+            event_info_render.append(
                 dict(
-                    event_id=k,
-                    reference_channel=v["reference_channel"],
-                    trace_start_time=v["trace_start_time"],
-                    n_reference_picks=v["n_reference_picks"],
-                    n_picks=v["n_picks"],
+                    event_id=event_id,
+                    reference_channel=event_m["reference_channel"],
+                    trace_start_time=event_m["trace_start_time"],
+                    n_reference_picks=len(event_m["reference_picks"]),
+                    n_picks=get_num_picks(event_id),
                 )
-                for k, v in event_info.items()
-            ],
-            key=lambda x: x["trace_start_time"],
-        )
-    )
+            )
     return flask.render_template("home.html", event_info=event_info_render)
 
 
