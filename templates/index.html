@@ -24,7 +24,7 @@
     }
   </style>
   <script>
-    let CC = {{ client_config | safe }};
+    let CC = {{ client_config | tojson }};
   </script>
   <script src="/static/main.js"></script>
   <div id="plots" style="float: left; overflow-y: scroll; height: 100%;"></div>

@@ -10,3 +10,8 @@ Run dev server:
 ``` shell
 flask --app server.py --debug run
 ```
+
+Create empty picks db:
+```shell
+sqlite3 picks.db < schema.sql
+```

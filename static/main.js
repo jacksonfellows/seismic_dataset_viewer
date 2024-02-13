@@ -86,7 +86,7 @@ let pickPlugin = {
 			buttonDiv.appendChild(button);
 			button.onclick = e => {
 				e.stopPropagation(); // Stop click event from triggering on parent div.
-				delete CC.picks[u.id];
+				CC.picks[u.id] = null;
 				updatedPicks = true;
 				u.redraw();
 			};

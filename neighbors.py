@@ -90,7 +90,6 @@ def write_event(event_m, picks_dict, st, inv):
         "m_from_reference_station": {},
         "trace_start_time": event_m["trace_start_time"],
         "reference_picks": picks_dict,
-        "picks": {},
     }
     for c in channels:
         cm = inv.get_channel_metadata(c)
