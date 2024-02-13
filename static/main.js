@@ -73,6 +73,8 @@ window.onbeforeunload = e => {
 	}
 };
 
+let samplingRate = 100;
+
 let pickPlugin = {
 	hooks: {
 		ready: u => {
@@ -93,7 +95,7 @@ let pickPlugin = {
 			u.over.onclick = e => {
 				// Use offsetX not clientX!
 				let pickX = u.posToVal(e.offsetX, "x");
-				CC.picks[u.id] = pickX;
+				CC.picks[u.id] = Math.round(pickX * samplingRate);
 				updatedPicks = true;
 				// Force a redraw so that we see the pick.
 				u.redraw();
@@ -102,7 +104,7 @@ let pickPlugin = {
 		draw: u => {
 			let refPickX = CC.reference_picks[u.id];
 			if (refPickX) drawPick(u, refPickX, "orange");
-			let pickX = CC.picks[u.id];
+			let pickX = CC.picks[u.id] / samplingRate;
 			if (pickX) drawPick(u, pickX, "red");
 		}
 	}
