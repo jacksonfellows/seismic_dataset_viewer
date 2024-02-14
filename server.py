@@ -21,7 +21,7 @@ def get_picks(event_id):
         return {row[0]: row[1] for row in res}
 
 
-def do_save_picks(event_id, trace_start_time, picks):
+def do_save_picks(event_id, trace_start_time, picks, user_id):
     current_picks = get_picks(event_id)
     new_picks = {
         channel_id: pick_sample
@@ -29,12 +29,12 @@ def do_save_picks(event_id, trace_start_time, picks):
         if current_picks.get(channel_id) != pick_sample
     }
     rows = [
-        (event_id, channel_id, trace_start_time, pick_sample)
+        (event_id, channel_id, trace_start_time, pick_sample, user_id)
         for channel_id, pick_sample in new_picks.items()
     ]
     with sqlite3.connect("picks.db") as cur:
         cur.executemany(
-            "INSERT INTO picks (event_id, channel_id, trace_start_time, pick_sample) VALUES (?, ?, ?, ?);",
+            "INSERT INTO picks (event_id, channel_id, trace_start_time, pick_sample, user_id) VALUES (?, ?, ?, ?, ?);",
             rows,
         )
         # Update # of user picks. Doesn't really work with deleted picks (they
@@ -115,6 +115,8 @@ def save_picks(event_id):
     with open(event_dir / "metadata.json", "r") as f:
         metadata = json.load(f)
     trace_start_time = metadata["trace_start_time"]
-    picks = flask.request.json["picks"]
-    do_save_picks(event_id, trace_start_time, picks)
+    req_dict = flask.request.json
+    picks = req_dict["picks"]
+    user_id = req_dict["user_id"]
+    do_save_picks(event_id, trace_start_time, picks, user_id)
     return {}  # Need to return a non-None response.

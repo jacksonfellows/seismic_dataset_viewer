@@ -3,5 +3,6 @@ CREATE TABLE picks(
        channel_id TEXT,
        trace_start_time DATETIME,
        pick_sample INTEGER,
-       created_time DATETIME DEFAULT CURRENT_TIMESTAMP
+       created_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+       user_id TEXT
 );

@@ -40,11 +40,21 @@ let resetScalePlugin = {
 	}
 };
 
+function getOrSetUserId() {
+	let userId = window.localStorage.getItem("user_id");
+	if (userId === null) {
+		userId = window.prompt("User id (e.g. Cornell NetId):");
+		window.localStorage.setItem("user_id", userId);
+	}
+	return userId;
+}
+
 function savePicks() {
+	let userId = getOrSetUserId();
 	let client = new XMLHttpRequest();
 	client.open("POST", `/save_picks/${CC.event_id}`, true);
 	client.setRequestHeader("Content-Type", "application/json");
-	client.send(JSON.stringify({picks: CC.picks}));
+	client.send(JSON.stringify({picks: CC.picks, user_id: userId}));
 	client.addEventListener("load", _ => {
 		if (client.status == 200) {
 			updatedPicks = false;
