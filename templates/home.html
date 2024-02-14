@@ -16,10 +16,10 @@
       {% for i in event_info %}
       <tr>
         <td><a href="/event/{{ i['event_id'] }}">{{ i["event_id"] }}</a></td>
-        <td>{{ i["reference_channel"] }}</td>
+        <td>{{ i["reference_pick_channel_id"] }}</td>
         <td>{{ i["trace_start_time"] }}</td>
         <td>{{ i["n_reference_picks"] }}</td>
-        <td>{{ i["n_picks"] }}</td>
+        <td>{{ i["n_user_picks"] }}</td>
       </tr>
       {% endfor %}
     </tbody>

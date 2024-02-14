@@ -14,6 +14,7 @@ flask --app server.py --debug run
 Create empty picks db:
 ```shell
 sqlite3 picks.db < schema.sql
+sqlite3 picks.db < event_schema.sql
 ```
 
 Run production server (need to install stuff first):
