@@ -89,7 +89,7 @@ def xy(event_id, channel):
     # Assume file has correct dtype!
     try:
         Y = np.load(event_dir / f"{channel}.npy")
-    except FileNotFoundError:
+    except Exception:
         Y = np.zeros(2, dtype="<f")
     X = np.linspace(0, 120, len(Y), dtype=Y.dtype)
     XY = np.concatenate((X, Y), axis=None)
