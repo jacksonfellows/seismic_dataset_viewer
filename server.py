@@ -63,6 +63,14 @@ def get_all_event_info():
         ]
 
 
+def get_random_unpicked_event():
+    with sqlite3.connect("picks.db") as cur:
+        res = cur.execute(
+            "SELECT event_id FROM events WHERE n_user_picks = 0 ORDER BY RANDOM() LIMIT 1;"
+        )
+        return res.fetchone()[0]
+
+
 # Routes:
 
 
@@ -88,6 +96,12 @@ def xy(event_id, channel):
     response = flask.make_response(XY.tobytes())
     response.headers.set("Content-Type", "application/octet-stream")
     return response
+
+
+@app.route("/random")
+def random_unpicked_event():
+    event_id = get_random_unpicked_event()
+    return flask.redirect(f"/event/{event_id}")
 
 
 @app.route("/")

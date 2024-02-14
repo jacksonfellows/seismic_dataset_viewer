@@ -2,27 +2,34 @@
   <link rel="stylesheet" href="/static/sortable-theme-bootstrap.css"/>
 </head>
 <body>
-  <table class="sortable-theme-bootstrap" data-sortable>
-    <thead>
-      <tr>
-        <th>Event ID</th>
-        <th>Reference Pick Channel</th>
-        <th>Trace Start Time</th>
-        <th># Reference Picks</th>
-        <th># User Picks</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for i in event_info %}
-      <tr>
-        <td><a href="/event/{{ i['event_id'] }}">{{ i["event_id"] }}</a></td>
-        <td>{{ i["reference_pick_channel_id"] }}</td>
-        <td>{{ i["trace_start_time"] }}</td>
-        <td>{{ i["n_reference_picks"] }}</td>
-        <td>{{ i["n_user_picks"] }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div style="float: left; overflow-y: scroll; height: 100%;">
+    <table class="sortable-theme-bootstrap" data-sortable>
+      <thead>
+        <tr>
+          <th>Event ID</th>
+          <th>Reference Pick Channel</th>
+          <th>Trace Start Time</th>
+          <th># Reference Picks</th>
+          <th># User Picks</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in event_info %}
+        <tr>
+          <td><a href="/event/{{ i['event_id'] }}">{{ i["event_id"] }}</a></td>
+          <td>{{ i["reference_pick_channel_id"] }}</td>
+          <td>{{ i["trace_start_time"] }}</td>
+          <td>{{ i["n_reference_picks"] }}</td>
+          <td>{{ i["n_user_picks"] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div style="text-align: center;">
+    <form action="/random">
+      <input type="submit" value="Open random unpicked event"/>
+    </form>
+  </div>
   <script src="/static/sortable.min.js"></script>
 </body>
