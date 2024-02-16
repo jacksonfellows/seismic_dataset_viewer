@@ -106,7 +106,15 @@ def random_unpicked_event():
 
 @app.route("/")
 def index():
-    return flask.render_template("home.html", event_info=get_all_event_info())
+    event_info = get_all_event_info()
+    sum_user_picks = sum(i["n_user_picks"] for i in event_info)
+    sum_reference_picks = sum(i["n_reference_picks"] for i in event_info)
+    return flask.render_template(
+        "home.html",
+        event_info=event_info,
+        sum_user_picks=sum_user_picks,
+        sum_reference_picks=sum_reference_picks,
+    )
 
 
 @app.route("/save_picks/<event_id>", methods=["POST"])
