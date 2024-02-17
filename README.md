@@ -1,6 +1,6 @@
 # Demo #
 
-![Picking surface events](./pickhelper_demo.gif)
+![Picking surface events](./pickhelper_demo_short.gif)
 
 # Notes #
 
