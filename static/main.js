@@ -99,6 +99,7 @@ let pickPlugin = {
 				CC.picks[u.id] = null;
 				updatedPicks = true;
 				u.redraw();
+				u.pair.redraw();
 			};
 			u.over.appendChild(buttonDiv);
 
