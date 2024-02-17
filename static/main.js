@@ -109,6 +109,7 @@ let pickPlugin = {
 				updatedPicks = true;
 				// Force a redraw so that we see the pick.
 				u.redraw();
+				u.pair.redraw();
 			};
 		},
 		draw: u => {
@@ -144,6 +145,25 @@ let mapPlugin = {
 				safeFitBounds();
 				L.DomUtil.removeClass(station_markers[getStationName(u.id)]._icon.children[0], "station-selected");
 			};
+		}
+	}
+};
+
+let filterPlugin = {
+	hooks: {
+		ready: u => {
+			Object.keys(filterSos).reverse().forEach(filterKey => {
+				let buttonDiv = document.createElement("div");
+				buttonDiv.style = "float: right;";
+				let button = document.createElement("button");
+				button.innerHTML = filterKey;
+				buttonDiv.appendChild(button);
+				button.onclick = e => {
+					e.stopPropagation(); // Stop click event from triggering on parent div.
+					applyFilter(filterKey);
+				};
+				u.over.appendChild(buttonDiv);
+			});
 		}
 	}
 };
@@ -187,20 +207,40 @@ let defaultOpts = {
 	legend: {
 		show: false,
 	},
-	plugins: [resetScalePlugin, pickPlugin, mapPlugin]
+};
+
+let normalOpts = {
+	...defaultOpts,
+	plugins: [resetScalePlugin, pickPlugin, mapPlugin],
+};
+
+let filteredOpts = {
+	...defaultOpts,
+	plugins: [resetScalePlugin, pickPlugin, mapPlugin, filterPlugin],
 };
 
 let nPlotsLoaded = 0;
+
+let filterPairs = [];
 
 function loadPlot(channel, elem, opts) {
 	path = `/xy/${CC.event_id}/${channel}`;
 	loadArray(path, a => {
 		let M = a.length / 2;
 		let data = [a.slice(0, M), a.slice(M, a.length)];
-		let opts_ = {...opts, ...defaultOpts};
-		let u = new uPlot(opts_, data, elem);
-		u.id = channel;			// Set an id so we can e.g. reference picks later.
+		let u = new uPlot({...opts, ...normalOpts}, data, elem);
+		let detrended = Array.from(data[1]);
+		detrend(detrended);
+		let u_filt = new uPlot(filteredOpts, [data[0], detrended], elem);
+		filterPairs.push({detrended: detrended, u_filt: u_filt});
+		// Make them point at each other so we can redraw on picks.
+		u.pair = u_filt;
+		u_filt.pair = u;
+		// Set an id so we can e.g. reference picks later.
+		u.id = channel;
+		u_filt.id = channel;
 		sync.sub(u);
+		sync.sub(u_filt);
 		nPlotsLoaded++;
 		if (nPlotsLoaded == CC.channels.length) {
 			onPlotsLoaded();
@@ -271,3 +311,19 @@ function resizePlots() {
 }
 
 window.onresize = resizePlots;
+
+let filterCache = {};
+
+function applyFilter(filterKey) {
+	filterPairs.forEach(pair => {
+		let cacheId = pair.u_filt.id + "_" + filterKey;
+		if (filterCache[cacheId]) {
+			pair.u_filt.data[1] = filterCache[cacheId];
+		} else {
+			pair.u_filt.data[1] = Array.from(pair.detrended);
+			sosfiltfilt(filterSos[filterKey], pair.u_filt.data[1]);
+			filterCache[cacheId] = pair.u_filt.data[1];
+		}
+		pair.u_filt.redraw();
+	});
+}
