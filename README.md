@@ -1,3 +1,7 @@
+# Demo #
+
+![Picking surface events](./pickhelper_demo.gif)
+
 # Notes #
 
 Setup python environment:
