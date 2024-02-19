@@ -22,6 +22,19 @@
     .station-reference {
         background: green;
     }
+    .filter-span {
+        margin-left: 1px;
+        margin-right: 1px;
+        border: 1px solid black;
+        background: white;
+        padding: 1px;
+    }
+    .filter-span:hover {
+        background: lightgrey;
+    }
+    .filter-span-selected {
+        background: lightgrey;
+    }
   </style>
   <script>
     let CC = {{ client_config | tojson }};

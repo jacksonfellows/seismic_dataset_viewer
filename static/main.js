@@ -150,21 +150,38 @@ let mapPlugin = {
 	}
 };
 
+let filtersDivs = [];
+
+function createFiltersDiv() {
+	let filtersDiv = document.createElement("div");
+	filtersDivs.push(filtersDiv);
+	filtersDiv.style = "float: right;";
+	Object.keys(filterSos).forEach(filterKey => {
+		let filterSpan = document.createElement("span");
+		filtersDiv.appendChild(filterSpan);
+		filterSpan.classList.add("filter-span");
+		filterSpan.innerText = filterKey;
+		filterSpan.onclick = e => {
+			e.stopPropagation(); // Stop click event from triggering on parent div.
+			for (let div of filtersDivs) {
+				for (let span of div.children) {
+					if (span.innerText == filterKey) {
+						span.classList.add("filter-span-selected");
+					} else {
+						span.classList.remove("filter-span-selected");
+					}
+				}
+			}
+			applyFilter(filterKey);
+		};
+	});
+	return filtersDiv;
+}
+
 let filterPlugin = {
 	hooks: {
 		ready: u => {
-			Object.keys(filterSos).reverse().forEach(filterKey => {
-				let buttonDiv = document.createElement("div");
-				buttonDiv.style = "float: right;";
-				let button = document.createElement("button");
-				button.innerHTML = filterKey;
-				buttonDiv.appendChild(button);
-				button.onclick = e => {
-					e.stopPropagation(); // Stop click event from triggering on parent div.
-					applyFilter(filterKey);
-				};
-				u.over.appendChild(buttonDiv);
-			});
+			u.over.appendChild(createFiltersDiv());
 		}
 	}
 };
