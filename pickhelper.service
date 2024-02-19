@@ -1,0 +1,10 @@
+[Unit]
+Description=[Pickhelper]
+
+[Service]
+Type=simple
+StandardOutput=journal
+ExecStart=bash /home/ec2-user/pickhelper/run_server.sh
+
+[Install]
+WantedBy=default.target
