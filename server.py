@@ -91,7 +91,7 @@ def xy(event_id, channel):
         Y = np.load(event_dir / f"{channel}.npy")
     except Exception:
         Y = np.zeros(2, dtype="<f")
-    X = np.linspace(0, 120, len(Y), dtype=Y.dtype)
+    X = np.linspace(0, len(Y) / 100, len(Y), dtype=Y.dtype)
     XY = np.concatenate((X, Y), axis=None)
     response = flask.make_response(XY.tobytes())
     response.headers.set("Content-Type", "application/octet-stream")
