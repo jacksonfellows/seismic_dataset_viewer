@@ -29,8 +29,11 @@
   <div style="text-align: center;">
     <p>Total # of reference picks: {{ sum_reference_picks }}</p>
     <p>Total # of user picks: {{ sum_user_picks }}</p>
-    <form action="/random">
+    <form action="/random_unpicked">
       <input type="submit" value="Open random unpicked event"/>
+    </form>
+    <form action="/random_picked">
+      <input type="submit" value="Open random picked event"/>
     </form>
   </div>
   <script src="/static/sortable.min.js"></script>
