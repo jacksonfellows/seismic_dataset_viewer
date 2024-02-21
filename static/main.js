@@ -134,17 +134,23 @@ let mapPlugin = {
 		ready: u => {
 			// Hacky.
 			u.over.onmouseenter = e => {
-				let refMarker = station_markers[getStationName(CC.reference_channel)];
-				let marker = station_markers[getStationName(u.id)];
-				bounds.old = bounds.current;
-				bounds.current = new L.featureGroup([refMarker, marker]).getBounds().pad(0.2);
-				safeFitBounds();
-				L.DomUtil.addClass(marker._icon.children[0], "station-selected");
+				if (map) {
+					let refMarker = station_markers[getStationName(CC.reference_channel)];
+					let marker = station_markers[getStationName(u.id)];
+					bounds.old = bounds.current;
+					bounds.current = new L.featureGroup([refMarker, marker]).getBounds().pad(0.2);
+					safeFitBounds();
+					L.DomUtil.addClass(marker._icon.children[0], "station-selected");
+				}
 			};
 			u.over.onmouseleave = e => {
-				bounds.current = bounds.old;
-				safeFitBounds();
-				L.DomUtil.removeClass(station_markers[getStationName(u.id)]._icon.children[0], "station-selected");
+				if (map) {
+					if (bounds.old) {
+						bounds.current = bounds.old;
+					}
+					safeFitBounds();
+					L.DomUtil.removeClass(station_markers[getStationName(u.id)]._icon.children[0], "station-selected");
+				}
 			};
 		}
 	}
