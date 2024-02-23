@@ -15,9 +15,7 @@ let sync = uPlot.sync("test");
 // Mapping of id -> {min: xMin, max: xMax}.
 let originalBounds = {};
 
-function resetBounds(e) {
-	e.stopPropagation(); // Stop click event from triggering on parent div.
-	// Have to use sync object.
+function resetBounds() {
 	for (let u_ of sync.plots) {
 		u_.setScale("x", originalBounds[u_.id]);
 	}
@@ -35,7 +33,10 @@ let resetScalePlugin = {
 			let button = document.createElement("button");
 			button.innerHTML = "🏠";
 			buttonDiv.appendChild(button);
-			button.onclick = resetBounds;
+			button.onclick = e => {
+				e.stopPropagation(); // Stop click event from triggering on parent div.
+				resetBounds();
+			};
 			u.over.appendChild(buttonDiv);
 		}
 	}
@@ -357,3 +358,10 @@ function applyFilter(filterKey) {
 		pair.u_filt.redraw();
 	});
 }
+
+// Keybindings.
+document.onkeypress = e => {
+	if (e.key == "g") {
+		resetBounds();
+	}
+};
