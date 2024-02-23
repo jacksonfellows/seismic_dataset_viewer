@@ -12,21 +12,22 @@ function loadArray(path, handler) {
 
 let sync = uPlot.sync("test");
 
+// Mapping of id -> {min: xMin, max: xMax}.
+let originalBounds = {};
+
+function resetBounds(e) {
+	e.stopPropagation(); // Stop click event from triggering on parent div.
+	// Have to use sync object.
+	for (let u_ of sync.plots) {
+		u_.setScale("x", originalBounds[u_.id]);
+	}
+}
+
 let resetScalePlugin = {
 	hooks: {
 		ready: u => {			// u is a uPlot object.
 			// Save original bounds.
-			xMin = u.scales.x.min;
-			xMax = u.scales.x.max;
-			let over = u.over;
-
-			function resetBounds(e) {
-				e.stopPropagation(); // Stop click event from triggering on parent div.
-				// Have to use sync object.
-				for (let u_ of sync.plots) {
-					u_.setScale("x", {min: xMin, max: xMax});
-				}
-			}
+			originalBounds[u.id] = {min: u.scales.x.min, max: u.scales.x.max};
 
 			// Add reset button.
 			let buttonDiv = document.createElement("div");
@@ -35,7 +36,7 @@ let resetScalePlugin = {
 			button.innerHTML = "🏠";
 			buttonDiv.appendChild(button);
 			button.onclick = resetBounds;
-			over.appendChild(buttonDiv);
+			u.over.appendChild(buttonDiv);
 		}
 	}
 };
