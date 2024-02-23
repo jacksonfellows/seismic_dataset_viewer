@@ -40,11 +40,16 @@ let resetScalePlugin = {
 	}
 };
 
+function setUserId() {
+	let userId = window.prompt("User id (e.g. Cornell NetId):");
+	window.localStorage.setItem("user_id", userId);
+}
+
 function getOrSetUserId() {
 	let userId = window.localStorage.getItem("user_id");
 	if (userId === null) {
-		userId = window.prompt("User id (e.g. Cornell NetId):");
-		window.localStorage.setItem("user_id", userId);
+		setUserId();
+		userId = window.localStorage.getItem("user_id");
 	}
 	return userId;
 }
