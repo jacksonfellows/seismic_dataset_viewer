@@ -27,8 +27,8 @@
     </table>
   </div>
   <div style="text-align: center;">
-    <p>Total # of reference picks: {{ sum_reference_picks }}</p>
-    <p>Total # of user picks: {{ sum_user_picks }}</p>
+    <p>Picks: <b>{{ sum_user_picks }}</b> user, <b>{{ sum_reference_picks }}</b> reference</p>
+    <p>Events: <b>{{ n_events_picked }}</b> 1+ user pick, <b>{{ n_events_total }}</b> total</p>
     <form action="/random_unpicked">
       <input type="submit" value="Open random unpicked event"/>
     </form>

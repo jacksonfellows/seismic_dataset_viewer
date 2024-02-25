@@ -123,11 +123,15 @@ def index():
     event_info = get_all_event_info()
     sum_user_picks = sum(i["n_user_picks"] for i in event_info)
     sum_reference_picks = sum(i["n_reference_picks"] for i in event_info)
+    n_events_total = len(event_info)
+    n_events_picked = sum(i["n_user_picks"] > 0 for i in event_info)
     return flask.render_template(
         "home.html",
         event_info=event_info,
         sum_user_picks=sum_user_picks,
         sum_reference_picks=sum_reference_picks,
+        n_events_total=n_events_total,
+        n_events_picked=n_events_picked,
     )
 
 
