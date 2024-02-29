@@ -40,6 +40,11 @@ sqlite3 picks.db < schema.sql
 sqlite3 picks.db < event_schema.sql
 ```
 
+Populate events table:
+```shell
+python populate_events_table.py
+```
+
 Run prod server (needs root permissions to bind to port 80):
 ```shell
 sudo sh run_server.sh
