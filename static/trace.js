@@ -42,6 +42,31 @@ let resetScalePlugin = {
 	}
 };
 
+function drawPick(u, pickX, strokeStyle) {
+	let minYPos = u.valToPos(u.scales.y.min, "y", true);
+	let maxYPos = u.valToPos(u.scales.y.max, "y", true);
+	let xPos = u.valToPos(pickX, "x", true);
+	let ctx = u.ctx;
+	ctx.save();
+	ctx.strokeStyle = strokeStyle;
+	ctx.beginPath();
+	ctx.moveTo(xPos, minYPos); ctx.lineTo(xPos, maxYPos);
+	ctx.stroke();
+	ctx.restore();
+}
+
+let pickPlugin = {
+	hooks: {
+		draw: u => {
+			for (let pick of CC["picks"]) {
+				let pickX = pick["pick_s"];
+				if (pickX) drawPick(u, pickX, pick["color"]);
+			}
+		}
+	}
+};
+
+
 let defaultOpts = {
 	...getPlotSize(),
 	cursor: {
@@ -85,15 +110,15 @@ let defaultOpts = {
 
 let normalOpts = {
 	...defaultOpts,
-	plugins: [resetScalePlugin],
+	plugins: [resetScalePlugin, pickPlugin],
 };
 
 function loadComponent(elem, component) {
-	let path = `/xy/${traceName}/${component}`;
+	let path = `/xy/${CC["trace_name"]}/${component}`;
 	loadArray(path, a => {
 		let M = a.length / 2;
 		let data = [a.slice(0, M), a.slice(M, a.length)];
-		let u = new uPlot(normalOpts, data, elem);
+		let u = new uPlot({title: component, ...normalOpts}, data, elem);
 		sync.sub(u);
 	});
 }

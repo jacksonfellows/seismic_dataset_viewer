@@ -23,7 +23,12 @@ def get_trace_metadata(trace_name):
 @app.route("/trace/<trace_name>")
 def event(trace_name):
     m = get_trace_metadata(trace_name)
-    CC = dict(trace_name=trace_name, pick_s=m.trace_P_arrival_sample / SAMPLING_RATE)
+    P_s = m.trace_P_arrival_sample / SAMPLING_RATE
+    S_s = m.trace_S_arrival_sample / SAMPLING_RATE
+    CC = dict(
+        trace_name=trace_name,
+        picks=[dict(pick_s=P_s, color="red"), dict(pick_s=S_s, color="blue")],
+    )
     return flask.render_template("trace.html", CC=CC)
 
 

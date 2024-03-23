@@ -10,9 +10,9 @@
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
           crossorigin=""></script>
   <script>
-    let traceName = {{ trace_name | tojson }};
+    let CC = {{ CC | tojson }};
   </script>
   <script src="/static/filter.js"></script>
   <script src="/static/trace.js"></script>
-  <div id="plots" style="float: left; overflow-y: scroll; height: 100%;"></div>
+  <div id="plots"></div>
 </body>
