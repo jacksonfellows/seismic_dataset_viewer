@@ -3,38 +3,12 @@
 </head>
 <body>
   <div style="float: left; overflow-y: scroll; height: 100%;">
-    <table class="sortable-theme-bootstrap" data-sortable>
-      <thead>
-        <tr>
-          <th>Event ID</th>
-          <th>Reference Pick Channel</th>
-          <th>Trace Start Time</th>
-          <th># Reference Picks</th>
-          <th># User Picks</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for i in event_info %}
-        <tr>
-          <td><a href="/event/{{ i['event_id'] }}">{{ i["event_id"] }}</a></td>
-          <td>{{ i["reference_pick_channel_id"] }}</td>
-          <td>{{ i["trace_start_time"] }}</td>
-          <td>{{ i["n_reference_picks"] }}</td>
-          <td>{{ i["n_user_picks"] }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    {{ table_html|safe }}
   </div>
-  <div style="text-align: center;">
-    <p>Picks: <b>{{ sum_user_picks }}</b> user, <b>{{ sum_reference_picks }}</b> reference</p>
-    <p>Events: <b>{{ n_events_picked }}</b> 1+ user pick, <b>{{ n_events_total }}</b> total</p>
-    <form action="/random_unpicked">
-      <input type="submit" value="Open random unpicked event"/>
-    </form>
-    <form action="/random_picked">
-      <input type="submit" value="Open random picked event"/>
-    </form>
-  </div>
+  <script>
+    let t = document.getElementById("t");
+    t.setAttribute("data-sortable", "");
+    t.classList.add("sortable-theme-bootstrap");
+  </script>
   <script src="/static/sortable.min.js"></script>
 </body>

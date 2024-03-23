@@ -1,4 +1,4 @@
-name: pickhelper
+name: seismic_dataset_viewer
 channels:
  - conda-forge
 dependencies:
@@ -7,3 +7,5 @@ dependencies:
  - numpy
  - pandas
  - obspy
+ - pip:
+   - seisbench
