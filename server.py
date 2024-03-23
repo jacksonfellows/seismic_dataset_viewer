@@ -9,7 +9,9 @@ from flask import Flask
 app = Flask(__name__)
 
 
-dataset = seisbench.data.PNWExotic()
+dataset = seisbench.data.WaveformDataset(
+    "/Users/jackson/seismoslide/pnw_all", component_order="Z"
+)
 SAMPLING_RATE = 100
 
 
@@ -24,10 +26,13 @@ def get_trace_metadata(trace_name):
 def event(trace_name):
     m = get_trace_metadata(trace_name)
     P_s = m.trace_P_arrival_sample / SAMPLING_RATE
-    S_s = m.trace_S_arrival_sample / SAMPLING_RATE
+    S_s = m.get("trace_S_arrival_sample")
+    if S_s:
+        S_s /= SAMPLING_RATE
     CC = dict(
         trace_name=trace_name,
         picks=[dict(pick_s=P_s, color="red"), dict(pick_s=S_s, color="blue")],
+        components=list(dataset.component_order),
     )
     return flask.render_template("trace.html", CC=CC)
 

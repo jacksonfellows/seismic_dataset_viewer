@@ -125,7 +125,7 @@ function loadComponent(elem, component) {
 
 function loadComponents() {
 	let plotsDiv = document.getElementById("plots");
-	for (let component of ["Z", "N", "E"]) {
+	for (let component of CC["components"]) {
 		let pDiv = document.createElement("div");
 		pDiv.classList.add("my-plot");
 		plotsDiv.append(pDiv);
