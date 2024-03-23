@@ -10,20 +10,27 @@ app = Flask(__name__)
 
 
 dataset = seisbench.data.PNWExotic()
+SAMPLING_RATE = 100
+
+
+def get_trace_metadata(trace_name):
+    return dataset.metadata[dataset.metadata["trace_name"] == trace_name].iloc[0]
+
 
 # Routes:
 
 
 @app.route("/trace/<trace_name>")
 def event(trace_name):
-    return flask.render_template("trace.html", trace_name=trace_name)
+    m = get_trace_metadata(trace_name)
+    CC = dict(trace_name=trace_name, pick_s=m.trace_P_arrival_sample / SAMPLING_RATE)
+    return flask.render_template("trace.html", CC=CC)
 
 
 @app.route("/xy/<trace_name>/<component>")
 def xy(trace_name, component):
     component_i = dataset.component_order.index(component)
-    SAMPLING_RATE = 100
-    i = dataset.metadata[dataset.metadata["trace_name"] == trace_name].iloc[0]["index"]
+    i = get_trace_metadata(trace_name)["index"]
     Y = dataset.get_waveforms(i, sampling_rate=SAMPLING_RATE).astype("<f")[component_i]
     X = np.linspace(0, Y.shape[-1] / SAMPLING_RATE, Y.shape[-1]).astype("<f")
     XY = np.concatenate((X, Y), axis=None)
