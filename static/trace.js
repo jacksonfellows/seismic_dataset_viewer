@@ -88,13 +88,8 @@ let normalOpts = {
 	plugins: [resetScalePlugin],
 };
 
-function loadTrace() {
-	let plotsDiv = document.getElementById("plots");
-	let pDiv = document.createElement("div");
-	pDiv.classList.add("my-plot");
-	plotsDiv.append(pDiv);
-	let elem = pDiv;
-	let path = `/xy/${traceName}`;
+function loadComponent(elem, component) {
+	let path = `/xy/${traceName}/${component}`;
 	loadArray(path, a => {
 		let M = a.length / 2;
 		let data = [a.slice(0, M), a.slice(M, a.length)];
@@ -103,11 +98,21 @@ function loadTrace() {
 	});
 }
 
-window.onload = loadTrace;
+function loadComponents() {
+	let plotsDiv = document.getElementById("plots");
+	for (let component of ["Z", "N", "E"]) {
+		let pDiv = document.createElement("div");
+		pDiv.classList.add("my-plot");
+		plotsDiv.append(pDiv);
+		loadComponent(pDiv, component);
+	}
+}
+
+window.onload = loadComponents;
 
 function getPlotSize() {
 	let totalWidth = window.innerWidth;
-	let plotWidth = Math.floor(0.6*totalWidth);
+	let plotWidth = totalWidth - 20;
 	return {width: plotWidth, height: 180};
 }
 

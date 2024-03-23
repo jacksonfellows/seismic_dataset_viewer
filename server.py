@@ -19,11 +19,12 @@ def event(trace_name):
     return flask.render_template("trace.html", trace_name=trace_name)
 
 
-@app.route("/xy/<trace_name>")
-def xy(trace_name):
+@app.route("/xy/<trace_name>/<component>")
+def xy(trace_name, component):
+    component_i = dataset.component_order.index(component)
     SAMPLING_RATE = 100
     i = dataset.metadata[dataset.metadata["trace_name"] == trace_name].iloc[0]["index"]
-    Y = dataset.get_waveforms(i).astype("<f")[0]
+    Y = dataset.get_waveforms(i, sampling_rate=SAMPLING_RATE).astype("<f")[component_i]
     X = np.linspace(0, Y.shape[-1] / SAMPLING_RATE, Y.shape[-1]).astype("<f")
     XY = np.concatenate((X, Y), axis=None)
     response = flask.make_response(XY.tobytes())
