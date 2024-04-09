@@ -66,6 +66,41 @@ let pickPlugin = {
 	}
 };
 
+let filtersDivs = [];
+
+function createFiltersDiv() {
+	let filtersDiv = document.createElement("div");
+	filtersDivs.push(filtersDiv);
+	filtersDiv.style = "float: right;";
+	Object.keys(filterSos).forEach(filterKey => {
+		let filterSpan = document.createElement("span");
+		filtersDiv.appendChild(filterSpan);
+		filterSpan.classList.add("filter-span");
+		filterSpan.innerText = filterKey;
+		filterSpan.onclick = e => {
+			e.stopPropagation(); // Stop click event from triggering on parent div.
+			for (let div of filtersDivs) {
+				for (let span of div.children) {
+					if (span.innerText == filterKey) {
+						span.classList.add("filter-span-selected");
+					} else {
+						span.classList.remove("filter-span-selected");
+					}
+				}
+			}
+			applyFilter(filterKey);
+		};
+	});
+	return filtersDiv;
+}
+
+let filterPlugin = {
+	hooks: {
+		ready: u => {
+			u.over.appendChild(createFiltersDiv());
+		}
+	}
+};
 
 let defaultOpts = {
 	...getPlotSize(),
@@ -113,13 +148,28 @@ let normalOpts = {
 	plugins: [resetScalePlugin, pickPlugin],
 };
 
+let filteredOpts = {
+	...defaultOpts,
+	plugins: [resetScalePlugin, pickPlugin, filterPlugin],
+};
+
+let filterPairs = [];
+
 function loadComponent(elem, component) {
 	let path = `/xy/${CC["trace_name"]}/${component}`;
 	loadArray(path, a => {
 		let M = a.length / 2;
 		let data = [a.slice(0, M), a.slice(M, a.length)];
 		let u = new uPlot({title: component, ...normalOpts}, data, elem);
+		let detrended = Array.from(data[1]);
+		detrend(detrended);
+		let u_filt = new uPlot(filteredOpts, [data[0], detrended], elem);
+		filterPairs.push({detrended: detrended, u_filt: u_filt});
+		// Make them point at each other so we can redraw on picks.
+		u.pair = u_filt;
+		u_filt.pair = u;
 		sync.sub(u);
+		sync.sub(u_filt);
 	});
 }
 
@@ -147,6 +197,22 @@ function resizePlots() {
 }
 
 window.onresize = resizePlots;
+
+let filterCache = {};
+
+function applyFilter(filterKey) {
+	filterPairs.forEach(pair => {
+		let cacheId = pair.u_filt.id + "_" + filterKey;
+		if (filterCache[cacheId]) {
+			pair.u_filt.data[1] = filterCache[cacheId];
+		} else {
+			pair.u_filt.data[1] = Array.from(pair.detrended);
+			sosfiltfilt(filterSos[filterKey], pair.u_filt.data[1]);
+			filterCache[cacheId] = pair.u_filt.data[1];
+		}
+		pair.u_filt.redraw();
+	});
+}
 
 // Keybindings.
 document.onkeypress = e => {

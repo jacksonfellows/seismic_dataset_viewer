@@ -9,10 +9,26 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
           crossorigin=""></script>
+  <style>
+    .filter-span {
+        margin-left: 1px;
+        margin-right: 1px;
+        border: 1px solid black;
+        background: white;
+        padding: 1px;
+    }
+    .filter-span:hover {
+        background: lightgrey;
+    }
+    .filter-span-selected {
+        background: lightgrey;
+    }
+  </style>
   <script>
     let CC = {{ CC | tojson }};
   </script>
   <script src="/static/filter.js"></script>
   <script src="/static/trace.js"></script>
   <div id="plots"></div>
+  <p>{{ metadata_html | safe }}</p>
 </body>

@@ -1,16 +1,17 @@
-import json
-from pathlib import Path
-
 import flask
 import numpy as np
+import pandas as pd
 import seisbench.data
 from flask import Flask
 
 app = Flask(__name__)
 
 
+# dataset = seisbench.data.WaveformDataset(
+#     "/Users/jackson/seismoslide/pnw_all", component_order="Z"
+# )
 dataset = seisbench.data.WaveformDataset(
-    "/Users/jackson/seismoslide/pnw_all", component_order="Z"
+    "/Users/jackson/seismoslide/inference_test", component_order="Z"
 )
 SAMPLING_RATE = 100
 
@@ -34,7 +35,8 @@ def event(trace_name):
         picks=[dict(pick_s=P_s, color="red"), dict(pick_s=S_s, color="blue")],
         components=list(dataset.component_order),
     )
-    return flask.render_template("trace.html", CC=CC)
+    metadata_html = m.to_frame().to_html(header=False)
+    return flask.render_template("trace.html", CC=CC, metadata_html=metadata_html)
 
 
 @app.route("/xy/<trace_name>/<component>")
@@ -49,8 +51,14 @@ def xy(trace_name, component):
     return response
 
 
+def make_link(trace_name):
+    return f"<a href='/trace/{trace_name}'>{trace_name}</a>"
+
+
 @app.route("/")
 def index():
-    head = dataset.metadata.head(100)
-    table_html = head.to_html(index=False, table_id="t")
+    head: pd.DataFrame = dataset.metadata.head(1000)
+    table_html = head.to_html(
+        index=False, table_id="t", formatters=dict(trace_name=make_link), escape=False
+    )
     return flask.render_template("home.html", table_html=table_html)
